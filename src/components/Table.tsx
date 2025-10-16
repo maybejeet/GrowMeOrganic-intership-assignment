@@ -5,6 +5,7 @@ import { Button } from 'primereact/button';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import { InputNumber , type InputNumberValueChangeEvent} from "primereact/inputnumber";
 import { FloatLabel } from 'primereact/floatlabel';
+import type { DataTablePageEvent } from 'primereact/datatable';
 
 interface List {
     id: number,
@@ -18,7 +19,7 @@ interface List {
 
 
 const Table = () => {
-    const [selectedRow, setSelectedRow] = useState<List[] | null>(null);
+    //const [selectedRow, setSelectedRow] = useState<List[] | null>(null);
     const [list, setList] = useState<List[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [page, setPage] = useState<number>(1);
@@ -41,7 +42,7 @@ const Table = () => {
                 const dataArray = Array.isArray(json.data) ? json.data : [];
                 //console.log("This is dearch data", dataArray);
                 setTotalRecords(json.pagination?.total);
-                const filteredData : List[] = dataArray.map((item) => ({
+                const filteredData : List[] = dataArray.map((item : List) => ({
                     id: item.id,
                     title: item.title,
                     place_of_origin: item.place_of_origin,
@@ -63,15 +64,15 @@ const Table = () => {
         fetchUrl(page);
     },[page])
 
-    const onPageChange = (event : any) => {
-        setPage(event.page + 1);
+    const onPageChange = (event : DataTablePageEvent ) => {
+        setPage(event.page! + 1);
     };
 
     const handleSelectRows = async () => {
         if (numRows && numRows > 0) {
           let remaining = numRows;
           let currentPage = 1;
-          let ids: number[] = [];
+          const ids: number[] = [];
           
           while (remaining > 0) {
               const url = `https://api.artic.edu/api/v1/artworks?page=${currentPage}`
@@ -83,7 +84,7 @@ const Table = () => {
                 const dataArray = Array.isArray(json.data) ? json.data : [];
                 if (dataArray.length === 0) break;
                 const toTake = Math.min(remaining, dataArray.length);
-                ids.push(...dataArray.slice(0, toTake).map((item) => item.id));
+                ids.push(...dataArray.slice(0, toTake).map((item : List) => item.id));
             remaining -= toTake;
             currentPage++;
         }
