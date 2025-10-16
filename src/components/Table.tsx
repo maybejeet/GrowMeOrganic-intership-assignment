@@ -133,15 +133,13 @@ const Table = () => {
             paginator
             first={(page - 1) * 12}
             selectionMode={ 'checkbox'}
-            selection={visibleSelection || []}
-           // onSelectionChange={(e) => setSelectedRow(e.value)}
+            selection={selectedIds! && visibleSelection || []}
            onSelectionChange={(e) => {
-            const ids = e.value.map((r: List) => r.id);
-            setSelectedIds((prev) => {
-              const updated = [...new Set([...prev, ...ids])];
-              return updated;
-            });
-          }}
+            const currentPageIds = list.map((r: List) => r.id);
+            const newSelectionIds = e.value.map((r: List) => r.id);
+            const otherPageSelections = selectedIds.filter(id => !currentPageIds.includes(id));
+            setSelectedIds([...otherPageSelections, ...newSelectionIds]);
+        }}
             dataKey="id"
             lazy
             totalRecords={totalRecords}
